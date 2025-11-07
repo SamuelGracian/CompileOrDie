@@ -42,7 +42,7 @@ public:
 	void Pitch(const FInputActionValue& Value);
 	void Roll(const FInputActionValue& Value);
 
-
+	float GetCurrentDistanceOnSpline() const;
 
 protected:
 
@@ -71,6 +71,8 @@ protected:
 
 	FVector2D ScreenOffset; // Movement inside the bounds}
 
+	UPROPERTY(EditAnywhere, Category = "Flight Path")
+	float CurrentDistaneOnSpline = 300.0f;
 
 	/// <summary>
 	/// Movement and Rotation Speeds

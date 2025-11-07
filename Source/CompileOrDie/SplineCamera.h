@@ -29,12 +29,15 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Spline")
 	float PathSpeed = 100.0f;
 
-	// Bounding limits for offset relative to spline position
+	// Bounding limits for offset relative to spline position.
 	UPROPERTY(EditAnywhere, Category = "Bounds")
 	float HorizontalLimit = 300.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Bounds")
 	float VerticalLimit = 200.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Bounds")
+	bool bUseViewportLimits = true;
 
 	UPROPERTY(EditAnywhere, Category = "Interp")
 	float PositionInterpSpeed = 6.0f;
@@ -42,6 +45,9 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	// Update HorizontalLimit/VerticalLimit from the active viewport and camera.
+	void UpdateLimitsFromViewport(const FVector& PlanePoint);
 
 	float m_currentDistance = 0.0f;
 

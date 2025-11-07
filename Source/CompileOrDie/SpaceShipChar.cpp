@@ -72,6 +72,8 @@ void ASpaceShipChar::Tick(float DeltaTime)
 	FRotator VisualRot = GetActorRotation();
 	VisualRot.Roll = FMath::FInterpTo(VisualRot.Roll, TargetRoll, DeltaTime, 3.0f);
 	SetActorRotation(VisualRot);
+
+	CurrentDistaneOnSpline = SplineProgress * FlightPath->GetSplineLength();
 }
 
 ///---------------------------------------------------------
@@ -114,4 +116,9 @@ void ASpaceShipChar::Roll(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
 	//UE_LOG(LogStarfox, Display, TEXT("Roll input actioned."));
+}
+
+float ASpaceShipChar::GetCurrentDistanceOnSpline() const
+{
+	return CurrentDistaneOnSpline;
 }
