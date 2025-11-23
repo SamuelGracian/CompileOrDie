@@ -6,7 +6,9 @@
 #include "Camera/CameraComponent.h"
 #include "Components/SplineComponent.h"
 #include "Target.generated.h"
+#include "InputAction.h"
 
+struct FInputActionValue;
 
 UCLASS()
 class COMPILEORDIE_API ATarget : public ACharacter
@@ -28,15 +30,23 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	void Move(const FInputActionValue& value);
+
+	// --- Camera ---
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	USpringArmComponent* SpringArm;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* CameraComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
+	UCameraComponent* Camera;
 
-	//variables to control camera lag behavior
-	float Speed;
-	float TargetCameraLagSpeed;
-	float TargetCameraRotationLagSpeed;
-	float InterpSpeed;
+	// Relative Movement (player input)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
+	FVector2D CameraInput = FVector2D::ZeroVector;
+
+	// Sens to move the camera
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float LookSpeed = 150.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	UInputAction* MoveAction;
 };
