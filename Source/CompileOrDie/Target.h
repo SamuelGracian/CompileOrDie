@@ -1,12 +1,12 @@
 #pragma once
-
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SplineComponent.h"
-#include "Target.generated.h"
 #include "InputAction.h"
+#include "InputMappingContext.h"
+#include "Target.generated.h"
 
 struct FInputActionValue;
 
@@ -30,7 +30,9 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	void Move(const FInputActionValue& value);
+	void Aim(const FInputActionValue& value);
+
+	void StopAiming(const FInputActionValue& value);
 
 	// --- Camera ---
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
@@ -48,5 +50,10 @@ public:
 	float LookSpeed = 150.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-	UInputAction* MoveAction;
+	UInputAction* AimAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	UInputMappingContext* MappingContext;
+
+	FVector2D AimVector = FVector2D::ZeroVector;
 };

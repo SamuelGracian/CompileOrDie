@@ -25,6 +25,19 @@ ATarget::ATarget()
 void ATarget::BeginPlay()
 {
 	Super::BeginPlay();
+
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (!PlayerController) return;
+
+	// Obtener el Enhanced Input Local Player Subsystem
+	if (ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer())
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
+			LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
+		{
+			Subsystem->AddMappingContext(MappingContext, 0);
+		}
+	}
 }
 
 // Called every frame
@@ -42,40 +55,39 @@ void ATarget::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	// Enhanced Input binding
 	if (UEnhancedInputComponent* EI = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		// Make sure MoveAction is valid before binding
-		if (MoveAction)
-		{
-			EI->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ATarget::Move);
-		}
+		EI->BindAction(AimAction, ETriggerEvent::Triggered, this, &ATarget::Aim);
+		EI->BindAction(AimAction, ETriggerEvent::Completed, this, &ATarget::StopAiming);
 	}
 }
 
-void ATarget::Move(const FInputActionValue& value)
+
+void ATarget::Aim(const FInputActionValue& value)
 {
+	// Read aim as a 2D axis and feed it into Character movement.
 	FVector2D MovementVector = value.Get<FVector2D>();
 
-	//FVector ShipLocalOffset;
-
 	if (!Controller) return;
-	
-	///Horizontal rotation
+
 	FRotator CamRotation = Controller->GetControlRotation();
 	CamRotation.Pitch = 0.0f;
 	CamRotation.Roll = 0.0f;
 
-	///Direction based on camera
-	FVector UpVector = FRotationMatrix(CamRotation).GetUnitAxis(EAxis::X);
-	FVector RightVector = FRotationMatrix(CamRotation).GetUnitAxis(EAxis::Y);
+	FVector Forward = FRotationMatrix(CamRotation).GetUnitAxis(EAxis::X);
+	FVector Right = FRotationMatrix(CamRotation).GetUnitAxis(EAxis::Y);
 
-	FVector LocalOffset =
-		UpVector * MovementVector.Y +
-		RightVector * MovementVector.X;
+	if (FMath::Abs(MovementVector.Y) > KINDA_SMALL_NUMBER)
+	{
+		AddMovementInput(Forward, MovementVector.Y);
+	}
+	if (FMath::Abs(MovementVector.X) > KINDA_SMALL_NUMBER)
+	{
+		AddMovementInput(Right, MovementVector.X);
+	}
+}
 
-	///Offset respect to spline
-	//ShipLocalOffset += LocalOffset * MoveSpeed;
-
-
+void ATarget::StopAiming(const FInputActionValue& Value)
+{
+	AimVector = FVector2D::ZeroVector;
 }
